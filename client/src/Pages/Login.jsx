@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -11,7 +11,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useLoginUserMutation, useRegisterUserMutation } from "@/features/api/authApi";
+import { toast } from "sonner";
 
 const Login = () => {
   const [signupInput, setSignupInput] = useState({
@@ -20,6 +22,19 @@ const Login = () => {
     password: "",
   });
   const [loginInput, setLoginInput] = useState({ email: "", password: "" });
+
+  const [registerUser, {
+    data: registerData,
+    error: registerError,
+    isLoading: registerIsLoading,
+    isSuccess: registerSuccess },
+  ] = useRegisterUserMutation();
+  const [loginUser, {
+    data: loginData,
+    error: loginError,
+    isLoading: loginIsLoading,
+    isSuccess: loginSuccess },
+  ] = useLoginUserMutation();
 
   const [showPasswordSignup, setShowPasswordSignup] = useState(false);
   const [showPasswordLogin, setShowPasswordLogin] = useState(false);
@@ -33,13 +48,35 @@ const Login = () => {
     }
   };
 
-  const handleRegistration = (type) => {
+  const handleRegistration = async (type) => {
     const inputData = type === "signup" ? signupInput : loginInput;
-    console.log(inputData);
+    const action = type === "signup" ? registerUser : loginUser;
+    await action(inputData);
   };
+  useEffect( ()=>{
+      if(registerSuccess && registerData){
+        toast.success(registerData.message || "Signup successful");
+      }
+      if (registerError) {
+        toast.error(registerData.data.message || "Signup Failed")
+      }
+      if (loginSuccess && loginData) {
+        toast.success(loginData.message || "Login is successful.") 
+      }
+      if (loginError) {
+        toast.error(loginError.data.message || "Login Failed")
+      }
+  }), [
+    loginIsLoading,
+    registerIsLoading,
+    loginData,
+    registerData,
+    loginError,
+    registerError
+  ]
 
   return (
-    <div className="flex justify-center items-center w-full">
+    <div className="flex justify-center items-center w-full mt-20">
       <Tabs defaultValue="account" className="w-[400px]">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="signup">Signup</TabsTrigger>
@@ -98,7 +135,15 @@ const Login = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => handleRegistration("signup")}>Signup</Button>
+              <Button disabled={registerIsLoading} onClick={() => handleRegistration("signup")}>
+                {
+                  registerIsLoading ? (
+                    <>
+                      < Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
+                    </>
+                  ) : "Signup"
+                }
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -144,7 +189,15 @@ const Login = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => handleRegistration("login")}>Login</Button>
+              <Button disabled={loginIsLoading} onClick={() => handleRegistration("login")}>
+                {
+                  loginIsLoading ? (
+                    <>
+                      < Loader2 className="mr-2 h-4 w-4 animate-spin" />Please Wait
+                    </>
+                  ) : "Login"
+                }
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
