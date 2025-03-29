@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useLoginUserMutation, useRegisterUserMutation } from "@/features/api/authApi";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [signupInput, setSignupInput] = useState({
@@ -35,6 +36,8 @@ const Login = () => {
     isLoading: loginIsLoading,
     isSuccess: loginSuccess },
   ] = useLoginUserMutation();
+
+  const navigate= useNavigate();
 
   const [showPasswordSignup, setShowPasswordSignup] = useState(false);
   const [showPasswordLogin, setShowPasswordLogin] = useState(false);
@@ -62,6 +65,7 @@ const Login = () => {
       }
       if (loginSuccess && loginData) {
         toast.success(loginData.message || "Login is successful.") 
+        navigate("/")
       }
       if (loginError) {
         toast.error(loginError.data.message || "Login Failed")
@@ -77,7 +81,7 @@ const Login = () => {
 
   return (
     <div className="flex justify-center items-center w-full mt-20">
-      <Tabs defaultValue="account" className="w-[400px]">
+      <Tabs defaultValue="login" className="w-[400px]">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="signup">Signup</TabsTrigger>
           <TabsTrigger value="login">Login</TabsTrigger>
