@@ -61,7 +61,7 @@ const Login = () => {
         toast.success(registerData.message || "Signup successful");
       }
       if (registerError) {
-        toast.error(registerData.data.message || "Signup Failed")
+        toast.error(registerError.data.message || "Signup Failed")
       }
       if (loginSuccess && loginData) {
         toast.success(loginData.message || "Login is successful.") 
@@ -70,14 +70,14 @@ const Login = () => {
       if (loginError) {
         toast.error(loginError.data.message || "Login Failed")
       }
-  }), [
+  }, [
     loginIsLoading,
     registerIsLoading,
     loginData,
     registerData,
     loginError,
     registerError
-  ]
+  ] ) 
 
   return (
     <div className="flex justify-center items-center w-full mt-20">

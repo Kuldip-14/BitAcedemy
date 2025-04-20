@@ -4,6 +4,10 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import connectDB from "./database/db.js";
 import userRouter from "./routes/user.route.js"
+import courseRoute from "./routes/course.route.js"
+import mediaRoute from "./routes/media.route.js"
+import purchaseRoute from "./routes/purchaseCourse.route.js"
+import courseProgressRoute from "./routes/courseProgress.route.js"
 dotenv.config({});
 const app = express();
 
@@ -21,10 +25,15 @@ app.use(cors({
 }));
 
 //Apis
+app.use("/api/v1/media", mediaRoute)
 app.use("/api/v1/user", userRouter)
+app.use("/api/v1/course", courseRoute)
+app.use("/api/v1/purchase",purchaseRoute)
+app.use("/api/v1/progress",courseProgressRoute)
 
- "http://localhost:8080/api/v1/user/register"
- "http://localhost:8080/api/v1/user/login"
+
+//  "http://localhost:8080/api/v1/user/register"
+//  "http://localhost:8080/api/v1/user/login"
 
 
 app.listen(PORT, () => {
