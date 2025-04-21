@@ -31,6 +31,7 @@ const Navbar = () => {
   const { user } = useSelector((store) => store.auth);
   const [logoutUser, { data, isSuccess }] = useLogoutUserMutation();
   const navigate = useNavigate();
+
   const logoutHandler = async () => {
     await logoutUser();
   };
@@ -41,17 +42,21 @@ const Navbar = () => {
       navigate("/login");
     }
   }, [isSuccess]);
+
   return (
-    <div className="h-16 dark:bg-[#0A0A0A] bg-white border-b dark:border-b-gray-800  border-b-gray-200 fixed top-0 left-0 right-0 duration-300 z-10">
+    <div className="h-16 dark:bg-[#020817] bg-white border-b dark:border-b-gray-800  border-b-gray-200 fixed top-0 left-0 right-0 duration-300 z-10">
       {/* Desktop */}
       <div className="max-w-7xl mx-auto hidden md:flex justify-between items-center gap-10 h-full">
         <div className="flex items-center gap-2">
           <School size={"30"} />
-          <Link to={"/"}>
-            <h1 className="hidden md:block front-extrabold text-2xl"> BitAcademy</h1>
+          <Link
+            to={"/"}
+            // onClick={() => console.log("BitAcademy link clicked")}
+          >
+            <h1 className="hidden md:block front-extrabold text-2xl">
+              BitAcademy
+            </h1>
           </Link>
-
-
         </div>
         {/* User icon and Dark mode icon */}
         <div className="flex items-center gap-8">
@@ -74,17 +79,18 @@ const Navbar = () => {
                     <Link to="my-learning"> My learning</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    {" "}
-                    <Link to="profile">Edit Profile</Link>{" "}
+                    <Link to="profile">Edit Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={logoutHandler}>
                     Log out
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                {user.role === "instructor" && (
+                {user?.role === "instructor" && (
                   <>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem><Link to="/admin/dashboard">Dashboard</Link></DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link to="/admin/dashboard">Dashboard</Link>
+                    </DropdownMenuItem>
                   </>
                 )}
               </DropdownMenuContent>
@@ -100,10 +106,18 @@ const Navbar = () => {
           <DarkMode />
         </div>
       </div>
+
       {/* Mobile Device */}
       <div className="flex md:hidden items-center justify-between px-4 h-full">
-        <h1 className="font-extrabold text-2xl">BitAcedmey</h1>
-        <MobileNavbar />
+        <h1
+          className="font-extrabold text-2xl cursor-pointer"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          BitAcedmey
+        </h1>
+        <MobileNavbar user={user} />
       </div>
     </div>
   );
@@ -111,34 +125,48 @@ const Navbar = () => {
 
 export default Navbar;
 
-const MobileNavbar = () => {
-  const role = "instructor";
+const MobileNavbar = ({ user }) => {
+  const navigate = useNavigate();
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button
           size="icon"
-          className="rounded-full bg-gray-200 hover:bg-gray-200"
+          className="rounded-full hover:bg-gray-200"
           variant="outline"
         >
           <Menu />
         </Button>
       </SheetTrigger>
       <SheetContent className="flex flex-col ">
-        <SheetHeader className="flex flex-row  items-center justify-between mt-2">
-          <SheetTitle>BitAcedmey</SheetTitle>
+        <SheetHeader className="flex flex-row items-center justify-between mt-2">
+          <SheetTitle>
+            <Link
+              to="/"
+            
+            >
+              BitAcedmey
+            </Link>
+          </SheetTitle>
           <DarkMode />
         </SheetHeader>
         <Separator className="mr-2" />
-        <nav className="flex flex-col space-y-4">
-          <span>My Learning</span>
-          <span>Edit Profile</span>
-          <p>Log Out</p>
+        <nav className="flex flex-col space-y-4 mt-4">
+          <Link to="/my-learning">My Learning</Link>
+          <Link to="/profile">Edit Profile</Link>
+          <p className="cursor-pointer" onClick={() => console.log("Logout clicked")}>
+            Log Out
+          </p>
         </nav>
-        {role === "instructor" && (
+        {user?.role === "instructor" && (
           <SheetFooter>
             <SheetClose asChild>
-              <Button type="submit">Dashboard</Button>
+              <Button
+                type="submit"
+                onClick={() => navigate("/admin/dashboard")}
+              >
+                Dashboard
+              </Button>
             </SheetClose>
           </SheetFooter>
         )}

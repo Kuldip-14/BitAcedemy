@@ -1,6 +1,4 @@
-
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import React from "react";
 import {
   Select,
   SelectContent,
@@ -11,7 +9,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import React, { useState } from "react";
 
 const categories = [
   { id: "nextjs", label: "Next JS" },
@@ -27,30 +24,15 @@ const categories = [
   { id: "html", label: "HTML" },
 ];
 
-const Filter = ({ handleFilterChange }) => {
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [sortByPrice, setSortByPrice] = useState("");
-
-  const handleCategoryChange = (categoryId) => {
-    setSelectedCategories((prevCategories) => {
-      const newCategories = prevCategories.includes(categoryId)
-        ? prevCategories.filter((id) => id !== categoryId)
-        : [...prevCategories, categoryId];
-
-        handleFilterChange(newCategories, sortByPrice);
-        return newCategories;
-    });
-  };
-
-  const selectByPriceHandler = (selectedValue) => {
-    setSortByPrice(selectedValue);
-    handleFilterChange(selectedCategories, selectedValue);
-  }
+const Filter = ({ selectedCategory, sortByPrice, onFilterChange, showCategoryFilter }) => {
   return (
     <div className="w-full md:w-[20%]">
       <div className="flex items-center justify-between">
-        <h1 className="font-semibold text-lg md:text-xl">Filter Options</h1>
-        <Select onValueChange={selectByPriceHandler}>
+        <h2 className="font-semibold text-lg md:text-xl">Filter Options</h2>
+        <Select
+          value={sortByPrice}
+          onValueChange={value => onFilterChange(selectedCategory, value)}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
@@ -63,21 +45,37 @@ const Filter = ({ handleFilterChange }) => {
           </SelectContent>
         </Select>
       </div>
-      <Separator className="my-4" />
-      <div>
-        <h1 className="font-semibold mb-2">CATEGORY</h1>
-        {categories.map((category) => (
-          <div className="flex items-center space-x-2 my-2">
-            <Checkbox
-              id={category.id}
-              onCheckedChange={() => handleCategoryChange(category.id)}
-            />
-            <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              {category.label}
-            </Label>
+
+      {showCategoryFilter && (
+        <>
+          <Separator className="my-4" />
+          <div>
+            <h3 className="font-semibold mb-2">Category</h3>
+            <Select
+              value={selectedCategory || "all"}
+              onValueChange={value => {
+                const cat = value === "all" ? "" : value;
+                onFilterChange(cat, sortByPrice);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Select Category</SelectLabel>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map(cat => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   );
 };

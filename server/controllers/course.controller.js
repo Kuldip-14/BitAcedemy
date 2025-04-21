@@ -30,32 +30,44 @@ export const createCourse = async (req, res) => {
 
 export const searchCourse = async (req, res) => {
   try {
-    const { query = "", categories = [], sortByPrice = "" } = req.query;
+    let { query = "", categories = [], sortByPrice = "" } = req.query;
 
-    // create search query
+    if (typeof categories === "string") {
+      categories = [categories];
+    }
+
+    const baseConditions = [];
+
+    // Text match condition
+    if (query) {
+      baseConditions.push({
+        $or: [
+          { courseTitle: { $regex: query, $options: "i" } },
+          { subTitle: { $regex: query, $options: "i" } },
+          { category: { $regex: query, $options: "i" } },
+        ],
+      });
+    }
+
+    // Category filter
+    if (categories.length > 0) {
+      baseConditions.push({
+        category: {
+          $in: categories.map(cat => new RegExp(`^${cat}$`, "i")),
+        },
+      });
+    }
+
     const searchCriteria = {
       isPublished: true,
-      $or: [
-        { courseTitle: { $regex: query, $options: "i" } },
-        { subTitle: { $regex: query, $options: "i" } },
-        { category: { $regex: query, $options: "i" } },
-      ],
+      ...(baseConditions.length > 0 ? { $and: baseConditions } : {}),
     };
 
-    // if categories are selected
-    if (categories.length > 0) {
-      searchCriteria.category = { $in: categories };
-    }
-
-    // define sorting order
     const sortOptions = {};
-    if (sortByPrice === "low") {
-      sortOptions.coursePrice = 1; // sort in ascending order
-    } else if (sortByPrice === "high") {
-      sortOptions.coursePrice = -1; //sort in descending order
-    }
+    if (sortByPrice === "low") sortOptions.coursePrice = 1;
+    if (sortByPrice === "high") sortOptions.coursePrice = -1;
 
-    let courses = await Course.find(searchCriteria)
+    const courses = await Course.find(searchCriteria)
       .populate({ path: "creator", select: "name photoUrl" })
       .sort(sortOptions);
 
@@ -65,8 +77,14 @@ export const searchCourse = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch courses",
+    });
   }
 };
+
+
 
 export const getPublishedCourse = async (req, res) => {
   try {
