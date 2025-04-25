@@ -23,20 +23,31 @@ const categories = [
   { id: "mongodb", label: "MongoDB" },
   { id: "html", label: "HTML" },
 ];
-
-const Filter = ({ selectedCategory, sortByPrice, onFilterChange, showCategoryFilter }) => {
+const Filter = ({
+  selectedCategory,
+  sortByPrice,
+  onFilterChange,
+  showCategoryFilter,
+}) => {
   return (
     <div className="w-full md:w-[20%]">
       <div className="flex items-center justify-between">
         <h2 className="font-semibold text-lg md:text-xl">Filter Options</h2>
+
         <Select
           value={sortByPrice}
-          onValueChange={value => onFilterChange(selectedCategory, value)}
+          onValueChange={(value) => onFilterChange(selectedCategory, value)}
         >
-          <SelectTrigger>
+          <SelectTrigger
+            className=" border-black dark:border-gray-600
+          rounded-md text-black data-[placeholder]:text-black
+          focus:border-primary dark:focus:border-primary-dark
+          transition-colors"
+          >
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
-          <SelectContent>
+
+          <SelectContent className=" border-gray-300 dark:border-gray-600">
             <SelectGroup>
               <SelectLabel>Sort by price</SelectLabel>
               <SelectItem value="low">Low to High</SelectItem>
@@ -53,19 +64,28 @@ const Filter = ({ selectedCategory, sortByPrice, onFilterChange, showCategoryFil
             <h3 className="font-semibold mb-2">Category</h3>
             <Select
               value={selectedCategory || "all"}
-              onValueChange={value => {
+              onValueChange={(value) => {
                 const cat = value === "all" ? "" : value;
                 onFilterChange(cat, sortByPrice);
               }}
             >
-              <SelectTrigger>
+              <SelectTrigger
+                className="
+                 border-gray-800 dark:border-gray-600 
+                 rounded-md 
+                 focus:border-primary dark:focus:border-primary-dark 
+                 transition-colors
+                 text-black
+               "
+              >
                 <SelectValue placeholder="Select Category" />
               </SelectTrigger>
-              <SelectContent>
+
+              <SelectContent className="border-2 border-gray-300 dark:border-gray-600">
                 <SelectGroup>
                   <SelectLabel>Select Category</SelectLabel>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {categories.map(cat => (
+                  {categories.map((cat) => (
                     <SelectItem key={cat.id} value={cat.id}>
                       {cat.label}
                     </SelectItem>

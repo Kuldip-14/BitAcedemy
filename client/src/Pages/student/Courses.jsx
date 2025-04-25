@@ -1,24 +1,20 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import React from "react";
-import Course from "./Course";
-import { useGetPublishedCourseQuery } from "@/features/api/courseApi";
-const courses= [1,2,3,4,5,6];
-const Courses = () => {
+import React from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+import Course from './Course';
+import { useGetPublishedCourseQuery } from '@/features/api/courseApi';
 
-  const {data , isLoading , isError} = useGetPublishedCourseQuery();
-  if(isError) return <h1>Some error occured while fetching courses</h1>
-  
+const Courses = () => {
+  const { data, isLoading, isError } = useGetPublishedCourseQuery();
+  if (isError) return <h1>Some error occurred while fetching courses</h1>;
+
   return (
-    <div className="bg-gray-50 dark:bg-[#020817]">
-      <div className="max-w-7xl mx-auto p-6">
-        <h2 className="font-bold text-3xl  text-center mb-10">Our Courses</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4  gap-6">
-        {
-        isLoading ? Array.from({length:8}).map((_, index) =>(
-            < CourseSkeleton key={index}/> 
-        )): 
-          data?.courses && data.courses.map((course , index)=> <Course key={index} course={course}/>)
-    }
+    <div className="bg-transparent relative -mt-16">
+      <div className="max-w-7xl mx-auto p-6 pt-20">
+        <h2 className="font-bold text-3xl text-center mb-10">Our Courses</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {isLoading
+            ? Array.from({ length: 8 }).map((_, index) => <CourseSkeleton key={index} />)
+            : data?.courses.map((course, index) => <Course key={index} course={course} />)}
         </div>
       </div>
     </div>
@@ -27,12 +23,12 @@ const Courses = () => {
 
 export default Courses;
 
-const CourseSkeleton = () => {
-    return(
-  <div className="bg-white shadow-md hover:shadow-lg transition-shadow rounded-lg overflow-hidden">
+// CourseSkeleton component (inline)
+const CourseSkeleton = () => (
+  <div className="bg-transparent  shadow-md hover:shadow-lg transition-shadow rounded-lg overflow-hidden">
     <Skeleton className="w-full h-36" />
     <div className="px-5 py-6 space-y-3">
-      <Skeleton className="h-6 w3/4" />
+      <Skeleton className="h-6 w-3/4" />
       <div className="flex items-center justify-between">
         <div className="flex items-center cap-3">
           <Skeleton className="h-6 w-6 rounded-full" />
@@ -44,4 +40,3 @@ const CourseSkeleton = () => {
     </div>
   </div>
 );
-}

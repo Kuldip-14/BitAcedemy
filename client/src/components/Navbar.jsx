@@ -1,5 +1,5 @@
 import { Menu, School } from "lucide-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -31,6 +31,7 @@ const Navbar = () => {
   const { user } = useSelector((store) => store.auth);
   const [logoutUser, { data, isSuccess }] = useLogoutUserMutation();
   const navigate = useNavigate();
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const logoutHandler = async () => {
     await logoutUser();
@@ -43,22 +44,33 @@ const Navbar = () => {
     }
   }, [isSuccess]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div className="h-16 dark:bg-[#020817] bg-white border-b dark:border-b-gray-800  border-b-gray-200 fixed top-0 left-0 right-0 duration-300 z-10">
+    <div
+      className={`h-16 fixed top-0 left-0 right-0 z-10 transition-colors duration-300 ${
+        isScrolled
+          ? "bg-transparent backdrop-blur-md"
+          : "bg-gradient-to-r from-[#F1F0E8] to-[#F1F0E8] dark:bg-gradient-to-r dark:from-[#213448] dark:to-[#213448]"
+      } `}
+    >
       {/* Desktop */}
-      <div className="max-w-7xl mx-auto hidden md:flex justify-between items-center gap-10 h-full">
+      <div className="max-w-7xl mx-auto hidden md:flex justify-between items-center gap-10 h-full px-4">
         <div className="flex items-center gap-2">
-          <School size={"30"} />
-          <Link
-            to={"/"}
-            // onClick={() => console.log("BitAcademy link clicked")}
-          >
-            <h1 className="hidden md:block front-extrabold text-2xl">
+          <School size={"30"} className="text-primary " />
+          <Link to={"/"}>
+            <h1 className="hidden md:block font-semibold   text-2xl text-slate-700 dark:text-[#d2eaec] ">
               BitAcademy
             </h1>
           </Link>
         </div>
-        {/* User icon and Dark mode icon */}
+
         <div className="flex items-center gap-8">
           {user ? (
             <DropdownMenu>
@@ -71,7 +83,7 @@ const Navbar = () => {
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
+              <DropdownMenuContent className="w-56 dark:bg-[#1e293b] dark:text-white">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
@@ -110,12 +122,10 @@ const Navbar = () => {
       {/* Mobile Device */}
       <div className="flex md:hidden items-center justify-between px-4 h-full">
         <h1
-          className="font-extrabold text-2xl cursor-pointer"
-          onClick={() => {
-            navigate("/");
-          }}
+          className="font-extrabold text-2xl text-gray-900 dark:text-slate-100 cursor-pointer"
+          onClick={() => navigate("/")}
         >
-          BitAcedmey
+          BitAcademy
         </h1>
         <MobileNavbar user={user} />
       </div>
@@ -132,25 +142,20 @@ const MobileNavbar = ({ user }) => {
       <SheetTrigger asChild>
         <Button
           size="icon"
-          className="rounded-full hover:bg-gray-200"
+          className="rounded-full hover:bg-gray-200 dark:hover:bg-[#334155]"
           variant="outline"
         >
           <Menu />
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex flex-col ">
+      <SheetContent className="flex flex-col dark:bg-[#0f172a] dark:text-white">
         <SheetHeader className="flex flex-row items-center justify-between mt-2">
           <SheetTitle>
-            <Link
-              to="/"
-            
-            >
-              BitAcedmey
-            </Link>
+            <Link to="/">BitAcademy</Link>
           </SheetTitle>
           <DarkMode />
         </SheetHeader>
-        <Separator className="mr-2" />
+        <Separator className="mr-2 dark:bg-[#334155]" />
         <nav className="flex flex-col space-y-4 mt-4">
           <Link to="/my-learning">My Learning</Link>
           <Link to="/profile">Edit Profile</Link>

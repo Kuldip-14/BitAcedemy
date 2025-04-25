@@ -16,14 +16,12 @@ import ReactPlayer from "react-player";
 import { useNavigate, useParams } from "react-router-dom";
 
 const CourseDetail = () => {
-  const params = useParams();
-  const courseId = params.courseId;
+  const { courseId } = useParams();
   const navigate = useNavigate();
-  const { data, isLoading, isError } =
-    useGetCourseDetailsWithStatusQuery(courseId);
+  const { data, isLoading, isError } = useGetCourseDetailsWithStatusQuery(courseId);
 
-  if (isLoading) return <h1>Loading...</h1>;
-  if (isError) return <h1>Failed to load course details</h1>;
+  if (isLoading) return <h1 className="text-white text-center text-xl">Loading...</h1>;
+  if (isError) return <h1 className="text-red-500 text-center text-xl">Failed to load course details</h1>;
 
   const { course, purchased } = data;
 
@@ -34,71 +32,78 @@ const CourseDetail = () => {
   };
 
   return (
-    <div className=" space-y-4">
-      <div className="bg-[#2D2F31] text-white">
-        <div className="max-w-7xl mx-auto py-8 px-4 md:px-8 flex flex-col gap-2">
-          <h1 className="font-bold text-2xl md:text-3xl">
-            {course?.courseTitle}
-          </h1>
-          <p className="text-base md:text-lg">{course.subTitle}</p>
-          <p>
-            Created By{" "}
-            <span className="text-[#C0C4FC] underline italic">
-              {course?.creator.name}
-            </span>
+    <div className="bg-gray-100 dark:bg-[#0f172a] min-h-screen py-6 px-4 md:px-8">
+      {/* Banner */}
+      <section className="bg-gradient-to-r from-indigo-700 to-purple-700 text-white rounded-xl p-6 md:p-10 shadow-lg mb-10">
+        <div className="max-w-5xl mx-auto space-y-2">
+          <h1 className="font-extrabold text-2xl md:text-4xl">{course?.courseTitle}</h1>
+          <p className="text-md md:text-lg">{course.subTitle}</p>
+          <p className="text-sm">
+            Created By <span className="italic underline text-yellow-300">{course?.creator.name}</span>
           </p>
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2 text-sm mt-1">
             <BadgeInfo size={16} />
             <p>Last updated {course.createdAt.split("T")[0]}</p>
           </div>
-          <p>Student enrolled: {course?.enrolledStudents?.length ?? 0}</p>
+          <p className="text-sm">Students enrolled: {course?.enrolledStudents?.length ?? 0}</p>
         </div>
-      </div>
-      <div className="max-w-7xl mx-auto my-5 px-4 md:px-8 flex felx-col lg:flex-row justify-between gap-10">
-        <div className="w-full lg:w-1/2 space-y-5">
-          <h1 className="font-bold text-xl md:text-2xl">Description</h1>
-          <p
-            className="text-sm"
-            dangerouslySetInnerHTML={{ __html: course.description }}
-          />
-          <Card>
+      </section>
+
+      {/* Content Layout */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
+        {/* Left - Details */}
+        <div className="col-span-2 space-y-6">
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">Description</h2>
+            <p
+              className="text-gray-700 dark:text-gray-300 text-sm md:text-base leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: course.description }}
+            />
+          </div>
+
+          <Card className="dark:bg-[#1e293b] bg-white shadow-md">
             <CardHeader>
-              <CardTitle>Course Content</CardTitle>
-              <CardDescription>{course.lectures.length}</CardDescription>
+              <CardTitle className="text-lg md:text-xl">Course Content</CardTitle>
+              <CardDescription className="text-sm">Total Lectures: {course.lectures.length}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
               {course.lectures.map((lecture, idx) => (
-                <div key={idx} className="flex items-center gap-2 text-sm">
-                  <span>
-                    {true ? <PlayCircle size={14} /> : <Lock size={14} />}
-                  </span>
+                <div key={idx} className="flex items-center gap-3 text-sm text-gray-800 dark:text-gray-100">
+                  {purchased ? <PlayCircle size={18} className="text-green-500" /> : <Lock size={18} className="text-red-400" />}
                   <p>{lecture.lectureTitle}</p>
                 </div>
               ))}
             </CardContent>
           </Card>
         </div>
-        <div className="w-full lg:w-1/3">
-          <Card>
-            <CardContent className="p-4 flex flex-col">
-              <div className="w-full aspect-video mv-4">
+
+        {/* Right - Video and Pricing */}
+        <div>
+          <Card className="dark:bg-[#1e293b] bg-white shadow-lg">
+            <CardContent className="p-4 space-y-4">
+              <div className="aspect-video rounded-lg overflow-hidden">
                 <ReactPlayer
-                  width={"100%"}
-                  height={"100%"}
-                  url={course.lectures[0].videoUrl}
-                  controls={true}
+                  url={course.lectures[0]?.videoUrl}
+                  width="100%"
+                  height="100%"
+                  controls
                 />
               </div>
-              <h1>Lecture Title</h1>
-              <Separator className="my-2" />
-              <h1 className="text-base md:text-xl font-semibold">
-                Course Price
-              </h1>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                {course.lectures[0]?.lectureTitle}
+              </h3>
+              <Separator />
+              <div className="text-center">
+                <p className="text-lg font-bold text-indigo-700 dark:text-indigo-300">₹{course.coursePrice}</p>
+              </div>
             </CardContent>
-            <CardFooter className="flex justify-center p-4">
+            <CardFooter>
               {purchased ? (
-                <Button onClick={handleContinueCourse} className="w-full">
-                  Continue course
+                <Button
+                  onClick={handleContinueCourse}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white shadow-md transition"
+                >
+                  Continue Course
                 </Button>
               ) : (
                 <BuyCourseButton courseId={courseId} />

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
-import { useEditLectureMutation, useGetLectureByIdQuery, useRemoveLectureMutation, } from "@/features/api/courseApi";
+import { useEditLectureMutation, useGetLectureByIdQuery, useRemoveLectureMutation } from "@/features/api/courseApi";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -27,22 +27,22 @@ const LectureTab = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [btnDisabled, setBtnDisabled] = useState(true);
 
-  const  params = useParams();
-const {courseId , lectureId} = params;
+  const params = useParams();
+  const { courseId, lectureId } = params;
 
-const {data:lectureData} = useGetLectureByIdQuery(lectureId);
-const lecture = lectureData?.lecture;
+  const { data: lectureData } = useGetLectureByIdQuery(lectureId);
+  const lecture = lectureData?.lecture;
 
-useEffect(() => {
-  if (lecture){
-    setLectureTitle(lecture.lectureTitle);
-    setIsFree(lecture.isPreviewFree);
-    setUploadVideoInfo(lecture.videoInfo);
-  }
-}, [lecture]);
+  useEffect(() => {
+    if (lecture) {
+      setLectureTitle(lecture.lectureTitle || "");
+      setIsFree(lecture.isPreviewFree);
+      setUploadVideoInfo(lecture.videoInfo);
+    }
+  }, [lecture]);
 
-  const  [editLecture, {data , isLoading ,error , isSuccess}] = useEditLectureMutation();
-  const [removeLecture, {data:removeData , isLoading:removeLoading , isSuccess:removeSuccess , }] = useRemoveLectureMutation();
+  const [editLecture, { data, isLoading, error, isSuccess }] = useEditLectureMutation();
+  const [removeLecture, { data: removeData, isLoading: removeLoading, isSuccess: removeSuccess }] = useRemoveLectureMutation();
 
   const fileChangeHandler = async (e) => {
     const file = e.target.files[0];
@@ -58,7 +58,7 @@ useEffect(() => {
         });
 
         if (res.data.success) {
-          console.log(res);
+          
           setUploadVideoInfo({
             videoUrl: res.data.data.url,
             publicId: res.data.data.public_id,
@@ -75,54 +75,61 @@ useEffect(() => {
     }
   };
 
-const editLectureHandler = async () => {
-  await editLecture({lectureTitle, videoInfo: uploadVideoInfo, isPreviewFree: isFree, courseId, lectureId});
-};
+  const editLectureHandler = async () => {
+    await editLecture({ lectureTitle, videoInfo: uploadVideoInfo, isPreviewFree: isFree, courseId, lectureId });
+  };
 
-const removeLectureHandler = async () => {
-  await removeLecture({lectureId})
-}
+  const removeLectureHandler = async () => {
+    await removeLecture({ lectureId });
+  };
 
-useEffect(() => {
-  
-  if(isSuccess){
-    toast.success(data.message);
-  }
-  if(error) {
-    toast.error(error.data.message);
-  }
-}, [isSuccess , error] )
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success(data.message);
+    }
+    if (error) {
+      toast.error(error.data.message);
+    }
+  }, [isSuccess, error]);
 
-useEffect(() => {
-   if(removeSuccess){
-    toast.success(removeData.message);
-   }
-}, [removeSuccess])
+  useEffect(() => {
+    if (removeSuccess) {
+      toast.success(removeData.message);
+    }
+  }, [removeSuccess]);
 
   return (
-    <Card>
-      <CardHeader className="flex justify-between">
+    <Card className="bg-blue-200 dark:bg-slate-900">
+      <CardHeader className="flex justify-between sm:flex-col sm:items-start">
         <div>
           <CardTitle>Edit Lecture</CardTitle>
           <CardDescription>
             Make changes and click save when done.
           </CardDescription>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 sm:mt-4">
           <Button disabled={removeLoading} variant="destructive" onClick={removeLectureHandler}>
-            {
-              removeLoading ? <>
-                <Loader2 className="mr-2 h-4 w-2 animate-spin"/>
-                 Please wait.. 
-                 </>: "Remove Lecture"
-            }
+            {removeLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Please wait...
+              </>
+            ) : (
+              "Remove Lecture"
+            )}
           </Button>
         </div>
       </CardHeader>
       <CardContent>
         <div className="my-5">
           <Label>Title</Label>
-          <Input type="text" value={lectureTitle} onChange={(e) => setLectureTitle(e.target.value)} placeholder="Ex.Introduction to JavaScript" />
+          <Input
+            type="text"
+            value={lectureTitle || ""}
+            onChange={(e) => setLectureTitle(e.target.value)}
+            placeholder="Ex. Introduction to JavaScript"
+            className="w-full sm:w-auto"
+          />
         </div>
         <div>
           <Label>
@@ -131,9 +138,9 @@ useEffect(() => {
           <Input
             type="file"
             accept="video/*"
-            onChange={fileChangeHandler}    
+            onChange={fileChangeHandler}
             placeholder="Upload video"
-            className="w-fit"
+            className="w-full sm:w-auto"
           />
         </div>
         <div className="flex items-center space-x-2 my-5">
@@ -146,15 +153,17 @@ useEffect(() => {
             <p>{uploadProgress}% uploaded</p>
           </div>
         )}
-        <div className="mt-4">
-          <Button disabled={isLoading} onClick={editLectureHandler}>
-            {
-              isLoading ? <>
-                <Loader2 className="mr-2 h-4 w-2 animate-spin " />
+        <div className="mt-4 flex justify-end">
+          <Button disabled={isLoading || btnDisabled} onClick={editLectureHandler}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Please wait...
-              </> : "Update Lecture"
-            }
-         </Button>
+              </>
+            ) : (
+              "Update Lecture"
+            )}
+          </Button>
         </div>
       </CardContent>
     </Card>

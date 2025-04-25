@@ -3,7 +3,7 @@ import { Twitter, Facebook, Instagram, Linkedin, Github, School } from 'lucide-r
 
 const FooterPage = () => {
   return (
-    <footer className="bg-[#0f1221] text-white py-4">
+    <footer className="bg-[#0f1221] text-white py-6">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center mb-4">
           {/* Logo with School Icon */}

@@ -40,38 +40,46 @@ const CreateLecture = () => {
       toast.error(error?.data?.message || "Something went wrong");
     }
   }, [isSuccess, error]);
-  console.log(lectureData);
 
   return (
-    <div className="flex-1 mx-10">
+    <div className="flex-1 mx-5 sm:mx-10">
       <div className="mb-4">
-        <h1 className="font-bold text-xl">
-          Lets add lecture, add some basic details for your new Lecture
-        </h1>
+        <h1 className="font-bold text-xl">Let's add a lecture</h1>
         <p className="text-sm">
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Obcaecati,
-          aliquam!
+          Add some basic details for your new lecture.
         </p>
       </div>
       <div className="space-y-4">
+        {/* Title Input Section */}
         <div>
-          <Label>Title </Label>
+          <Label>Title</Label>
           <Input
             type="text"
             name="title"
             value={lectureTitle}
             onChange={(e) => setLectureTitle(e.target.value)}
             placeholder="Your lecture title"
+            className="w-full sm:w-96"
           />
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => navigate(-1)}>
-            Back to course
+
+        {/* Action Buttons Section */}
+        <div className="flex flex-col sm:flex-row items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => navigate(`/admin/course/${courseId}`)}
+            className="w-full sm:w-auto"
+          >
+            Back to Course
           </Button>
-          <Button disabled={isLoading} onClick={createLectureHandler}>
+          <Button
+            disabled={isLoading}
+            onClick={createLectureHandler}
+            className="w-full sm:w-auto"
+          >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2  h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Please wait...
               </>
             ) : (
@@ -79,6 +87,8 @@ const CreateLecture = () => {
             )}
           </Button>
         </div>
+
+        {/* Lectures List */}
         <div className="mt-10">
           {lectureLoading ? (
             <p className="text-center">Loading lectures...</p>

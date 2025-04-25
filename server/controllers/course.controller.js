@@ -1,6 +1,6 @@
 import { Course } from "../models/course.model.js";
 import { Lecture } from "../models/lecture.model.js";
-import { deleteMediaFromCloudinary, uploadMedia } from "../utils/cloudinary.js";
+import {deleteMediaFromCloudinary, deleteVideoFromCloudinary, uploadMedia} from "../utils/cloudinary.js";
 export const createCourse = async (req, res) => {
   try {
     const { courseTitle, category } = req.body;
@@ -300,7 +300,7 @@ export const removeLecture = async (req, res) => {
     }
     // Delete lecture video from cloudinary.
     if (lecture.publicId) {
-      await deleteMediaFromCloudinary(lecture.publicId);
+      await deleteVideoFromCloudinary(lecture.publicId);
     }
     // Remove the lecture refrence from the course.
     await Course.updateOne(
@@ -366,3 +366,22 @@ export const togglePublishCourse = async (req, res) => {
     });
   }
 };
+
+export const deleteCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const course = await Course.findByIdAndDelete(courseId);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    // Optionally delete related lectures
+    await Lecture.deleteMany({ _id: { $in: course.lectures } });
+
+    return res.status(200).json({ message: "Course deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Failed to delete course" });
+  }
+};
+
