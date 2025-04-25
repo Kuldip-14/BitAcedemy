@@ -155,19 +155,21 @@ export const getCourseDetailWithPurchaseStatus = async (req, res) => {
   }
 };
 
-export const getAllPurchasedCourse = async (req, res) => {
+export const getAllPurchasedCourse = async (_, res) => {
   try {
     const purchasedCourse = await CoursePurchase.find({
       status: "completed",
-      userId: req.id,
-    }).populate({ path: "courseId" });
-
+    }).populate("courseId");
+    if (!purchasedCourse) {
+      return res.status(404).json({
+        purchasedCourse: [],
+      });
+    }
     return res.status(200).json({
       purchasedCourse,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Server error" });
   }
 };
 
