@@ -13,82 +13,71 @@ const Dashboard = () => {
   const { data, isLoading, isError } = useGetAllPurchasedCourseQuery();
   const { data: creatorData } = useGetCreatorCourseQuery();
 
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
 
   const purchasedCourse = Array.isArray(data) ? data : data?.purchasedCourse ?? [];
 
+  // Generate list: current year + previous 5 years
   const years = useMemo(() => {
-    return Array.from(new Set(
-      purchasedCourse.map(course => new Date(course.createdAt).getFullYear())
-    ));
-  }, [purchasedCourse]);
+    return Array.from({ length: 6 }, (_, i) => currentYear - i);
+  }, [currentYear]);
 
-  const filteredData = useMemo(() => {
-    return purchasedCourse.filter(course =>
-      new Date(course.createdAt).getFullYear() === selectedYear
-    );
-  }, [purchasedCourse, selectedYear]);
+  // Filter purchases for the selected year
+  const filteredData = useMemo(
+    () => purchasedCourse.filter(c => new Date(c.createdAt).getFullYear() === selectedYear),
+    [purchasedCourse, selectedYear]
+  );
 
+  // Prepare monthly data
   const courseDataByMonth = useMemo(() => {
     const months = Array.from({ length: 12 }, (_, i) => ({
       name: new Date(0, i).toLocaleString("default", { month: "short" }),
       sales: 0,
       revenue: 0
     }));
-
-    filteredData.forEach(course => {
-      const date = new Date(course.createdAt);
-      const monthIndex = date.getMonth();
-      const amount = course.amount ?? course.courseId.coursePrice;
-
-      months[monthIndex].sales += 1;
-      months[monthIndex].revenue += amount;
+    filteredData.forEach(c => {
+      const d = new Date(c.createdAt);
+      const amount = c.amount ?? c.courseId.coursePrice;
+      months[d.getMonth()].sales += 1;
+      months[d.getMonth()].revenue += amount;
     });
-
     return months;
   }, [filteredData]);
 
+  // Yearly totals
   const totalSales = filteredData.length;
   const totalRevenue = filteredData.reduce(
-    (sum, course) => sum + (course.amount ?? course.courseId.coursePrice), 0
+    (sum, c) => sum + (c.amount ?? c.courseId.coursePrice),
+    0
   );
 
-  const totalPublishedCourses = useMemo(() => {
-    return creatorData?.courses?.filter(course => course.isPublished)?.length || 0;
-  }, [creatorData]);
+  // Total published courses
+  const totalPublishedCourses = useMemo(
+    () => creatorData?.courses?.filter(c => c.isPublished)?.length || 0,
+    [creatorData]
+  );
 
   if (isLoading) return <h1>Loading…</h1>;
   if (isError) return <h1 className="text-red-500">Failed to load purchases</h1>;
 
   return (
     <div className="grid gap-6">
-      <div className="flex justify-end mb-4">
-        <select
-          className="border border-gray-300 rounded-md p-2"
-          value={selectedYear}
-          onChange={e => setSelectedYear(Number(e.target.value))}
-        >
-          {years.sort((a, b) => b - a).map(year => (
-            <option key={year} value={year}>{year}</option>
-          ))}
-        </select>
-      </div>
-
+      {/* Stat Cards */}
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
         <Card className="shadow-lg hover:shadow-xl transition-shadow">
-          <CardHeader><CardTitle>Total Sales</CardTitle></CardHeader>
+          <CardHeader><CardTitle>Total Sales (Year)</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-blue-600">{totalSales}</p>
           </CardContent>
         </Card>
-
         <Card className="shadow-lg hover:shadow-xl transition-shadow">
-          <CardHeader><CardTitle>Total Revenue</CardTitle></CardHeader>
+          <CardHeader><CardTitle>Total Revenue (Year)</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-blue-600">₹{totalRevenue}</p>
           </CardContent>
         </Card>
-
         <Card className="shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader><CardTitle>Total Published Courses</CardTitle></CardHeader>
           <CardContent>
@@ -97,14 +86,29 @@ const Dashboard = () => {
         </Card>
       </div>
 
+      {/* Monthly Sales & Revenue Chart */}
       <Card className="shadow-lg hover:shadow-xl transition-shadow mt-4">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold text-gray-700">
-            Monthly Sales & Revenue ({selectedYear})
-          </CardTitle>
+          <div className="flex items-center justify-between w-full">
+            <CardTitle className="text-xl font-semibold text-gray-700">
+              Monthly Sales & Revenue
+            </CardTitle>
+            <select
+              className="border border-gray-300 rounded-md p-2"
+              value={selectedYear}
+              onChange={e => setSelectedYear(Number(e.target.value))}
+            >
+              {years.map(year => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
+          </div>
+          <p className="text-sm text-gray-500 mt-1">
+            {selectedYear}
+          </p>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={300} > 
             <BarChart data={courseDataByMonth}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
               <XAxis dataKey="name" stroke="#6b7280" />
