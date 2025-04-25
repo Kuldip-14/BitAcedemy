@@ -63,22 +63,22 @@ const Dashboard = () => {
   if (isError) return <h1 className="text-red-500">Failed to load purchases</h1>;
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-6 ">
       {/* Stat Cards */}
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
-        <Card className="shadow-lg hover:shadow-xl transition-shadow">
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 ">
+        <Card className="shadow-lg hover:shadow-xl transition-shadow dark:bg-slate-900">
           <CardHeader><CardTitle>Total Sales (Year)</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-blue-600">{totalSales}</p>
           </CardContent>
         </Card>
-        <Card className="shadow-lg hover:shadow-xl transition-shadow">
+        <Card className="shadow-lg hover:shadow-xl transition-shadow dark:bg-slate-900">
           <CardHeader><CardTitle>Total Revenue (Year)</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-blue-600">₹{totalRevenue}</p>
           </CardContent>
         </Card>
-        <Card className="shadow-lg hover:shadow-xl transition-shadow">
+        <Card className="shadow-lg hover:shadow-xl transition-shadow dark:bg-slate-900">
           <CardHeader><CardTitle>Total Published Courses</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-blue-600">{totalPublishedCourses}</p>
@@ -87,14 +87,14 @@ const Dashboard = () => {
       </div>
 
       {/* Monthly Sales & Revenue Chart */}
-      <Card className="shadow-lg hover:shadow-xl transition-shadow mt-4">
+      <Card className="shadow-lg hover:shadow-xl transition-shadow mt-4 dark:bg-slate-900">
         <CardHeader>
-          <div className="flex items-center justify-between w-full">
-            <CardTitle className="text-xl font-semibold text-gray-700">
+          <div className="flex items-center justify-between w-full ">
+            <CardTitle className="text-xl font-semibold text-gray-700 dark:text-white">
               Monthly Sales & Revenue
             </CardTitle>
             <select
-              className="border border-gray-300 rounded-md p-2"
+              className="border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-white dark:bg-slate-900 text-black dark:text-white"
               value={selectedYear}
               onChange={e => setSelectedYear(Number(e.target.value))}
             >
@@ -102,13 +102,14 @@ const Dashboard = () => {
                 <option key={year} value={year}>{year}</option>
               ))}
             </select>
+
           </div>
           <p className="text-sm text-gray-500 mt-1">
             {selectedYear}
           </p>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300} > 
+          <ResponsiveContainer width="100%" height={300} >
             <BarChart data={courseDataByMonth}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
               <XAxis dataKey="name" stroke="#6b7280" />
