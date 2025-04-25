@@ -1,4 +1,4 @@
-import { Menu, School } from "lucide-react";
+import { Menu } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import {
   DropdownMenu,
@@ -8,9 +8,9 @@ import {
   DropdownMenuItem,
   DropdownMenuGroup,
   DropdownMenuSeparator,
-} from "./ui/dropdown-menu";
-import { Button } from "./ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DarkMode from "@/DarkMode";
 import {
   Sheet,
@@ -20,12 +20,14 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "./ui/sheet";
-import { Separator } from "@radix-ui/react-dropdown-menu";
+} from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogoutUserMutation } from "@/features/api/authApi";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
+
+import logo from '../../public/mortarboard.png';
 
 const Navbar = () => {
   const { user } = useSelector((store) => store.auth);
@@ -58,14 +60,18 @@ const Navbar = () => {
         isScrolled
           ? "bg-transparent backdrop-blur-md"
           : "bg-gradient-to-r from-[#F1F0E8] to-[#F1F0E8] dark:bg-gradient-to-r dark:from-[#213448] dark:to-[#213448]"
-      } `}
+      }`}
     >
       {/* Desktop */}
       <div className="max-w-7xl mx-auto hidden md:flex justify-between items-center gap-10 h-full px-4">
         <div className="flex items-center gap-2">
-          <School size={"30"} className="text-primary " />
+          <img
+            src={logo}
+            alt="BitAcademy Logo"
+            className="w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 object-contain"
+          />
           <Link to={"/"}>
-            <h1 className="hidden md:block font-semibold   text-2xl text-slate-700 dark:text-[#d2eaec] ">
+            <h1 className="hidden md:block font-semibold text-2xl text-slate-700 dark:text-[#d2eaec]">
               BitAcademy
             </h1>
           </Link>
@@ -121,19 +127,24 @@ const Navbar = () => {
 
       {/* Mobile Device */}
       <div className="flex md:hidden items-center justify-between px-4 h-full">
-        <h1
-          className="font-extrabold text-2xl text-gray-900 dark:text-slate-100 cursor-pointer"
-          onClick={() => navigate("/")}
-        >
-          BitAcademy
-        </h1>
+        <div className="flex items-center gap-2">
+          <img
+            src={logo}
+            alt="BitAcademy Logo"
+            className="w-8 h-8 xs:w-10 xs:h-10 object-contain"
+          />
+          <h1
+            className="font-extrabold text-2xl text-gray-900 dark:text-slate-100 cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            BitAcademy
+          </h1>
+        </div>
         <MobileNavbar user={user} />
       </div>
     </div>
   );
 };
-
-export default Navbar;
 
 const MobileNavbar = ({ user }) => {
   const navigate = useNavigate();
@@ -179,3 +190,5 @@ const MobileNavbar = ({ user }) => {
     </Sheet>
   );
 };
+
+export default Navbar;
