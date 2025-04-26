@@ -39,7 +39,7 @@ const BuyCourseButton = ({ courseId }) => {
         order_id: res.orderId,
         handler: async function (response) {
           try {
-            const verifyRes = await fetch("http://localhost:8080/api/v1/purchase/checkout/verify", {
+            const verifyRes = await fetch("https://bitacedemy.onrender.com/api/v1/purchase/checkout/verify", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
