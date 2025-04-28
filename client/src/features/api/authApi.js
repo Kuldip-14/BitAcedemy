@@ -1,14 +1,23 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { userLoggedIn, updateUser, userLoggedOut } from "../authSlice";  // Added updateUser import
+import { userLoggedIn, updateUser as updateUserAction, userLoggedOut } from "../authSlice";
 
 const USER_API = "https://bitacedemy.onrender.com/api/v1/user/";
 
+const baseQuery = fetchBaseQuery({
+  baseUrl: USER_API,
+  credentials: "include", 
+  prepareHeaders: (headers) => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+    return headers;
+  },
+});
+
 export const authApi = createApi({
   reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: USER_API,
-    credentials: "include",
-  }),
+  baseQuery,
   endpoints: (builder) => ({
     registerUser: builder.mutation({
       query: (inputData) => ({
@@ -25,8 +34,10 @@ export const authApi = createApi({
       }),
       async onQueryStarted(_, { queryFulfilled, dispatch }) {
         try {
-          const result = await queryFulfilled;
-          dispatch(userLoggedIn({ user: result.data.user }));
+          const { data } = await queryFulfilled;
+          const { user, token } = data;
+          localStorage.setItem("authToken", token);
+          dispatch(userLoggedIn({ user }));
         } catch (error) {
           console.log(error);
         }
@@ -39,7 +50,9 @@ export const authApi = createApi({
       }),
       async onQueryStarted(_, { queryFulfilled, dispatch }) {
         try {
-          dispatch(userLoggedOut()); 
+          await queryFulfilled;
+          localStorage.removeItem("authToken");
+          dispatch(userLoggedOut());
         } catch (error) {
           console.log(error);
         }
@@ -52,8 +65,8 @@ export const authApi = createApi({
       }),
       async onQueryStarted(_, { queryFulfilled, dispatch }) {
         try {
-          const result = await queryFulfilled;
-          dispatch(userLoggedIn({ user: result.data.user }));
+          const { data } = await queryFulfilled;
+          dispatch(userLoggedIn({ user: data.user }));
         } catch (error) {
           console.log(error);
         }
@@ -67,8 +80,8 @@ export const authApi = createApi({
       }),
       async onQueryStarted(_, { queryFulfilled, dispatch }) {
         try {
-          const result = await queryFulfilled;
-          dispatch(updateUser(result.data.user));  // Changed to use updateUser action
+          const { data } = await queryFulfilled;
+          dispatch(updateUserAction(data.user));
         } catch (error) {
           console.log(error);
         }
