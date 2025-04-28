@@ -1,6 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+<<<<<<< HEAD
 const COURSE_PURCHASE_API =  "http://localhost:8080/api/v1/purchase";
+=======
+const COURSE_PURCHASE_API = "http://localhost:8080/api/v1/purchase";
+>>>>>>> parent of e32f611 (added render)
 
 export const purchaseApi = createApi({
   reducerPath: "purchaseApi",

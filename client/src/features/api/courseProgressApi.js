@@ -1,6 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+<<<<<<< HEAD
 const COURSE_PROGRESS_API ="http://localhost:8080/api/v1/progress";
+=======
+const COURSE_PROGRESS_API = "http://localhost:8080/api/v1/progress";
+>>>>>>> parent of e32f611 (added render)
 
 export const courseProgressApi = createApi({
   reducerPath: "courseProgressApi",
