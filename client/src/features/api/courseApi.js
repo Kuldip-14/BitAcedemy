@@ -1,10 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const COURSE_API = "http://localhost:8080/api/v1/course";
-<<<<<<< HEAD
 
-=======
->>>>>>> parent of e32f611 (added render)
 export const courseApi = createApi({
   reducerPath: "courseApi",
   tagTypes: ["Refetch_Creator_Course", "Refetch_Lecture"],

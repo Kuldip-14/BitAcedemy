@@ -39,11 +39,10 @@ const BuyCourseButton = ({ courseId }) => {
         order_id: res.orderId,
         handler: async function (response) {
           try {
-<<<<<<< HEAD
-            const verifyRes = await fetch("http://localhost:8080/api/v1/purchase/checkout/verify",  {
-=======
+
+
             const verifyRes = await fetch("http://localhost:8080/api/v1/purchase/checkout/verify", {
->>>>>>> parent of e32f611 (added render)
+
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
